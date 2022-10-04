@@ -272,7 +272,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible curl nodejs npm
+            apk add --update ansible curl rsync nodejs npm
             apk add --no-cache curl
             apk add --no-cache openssh-client
             apk add --no-cache --upgrade bash
@@ -285,7 +285,6 @@ jobs:
             npm run build
             cd ..
             # Zip the directory
-            tar czf backend.tar.gz backend/
             cd .circleci/ansible
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
@@ -294,7 +293,7 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=false
-            ansible-playbook -i inventory.txt deploy-backend.yml
+            ansible-playbook -i inventory.txt deploy-backend.yml -vv
   smoke-test:
     docker:
       - image: alpine:latest 
