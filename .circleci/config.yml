@@ -262,8 +262,6 @@ jobs:
                     
   deploy-backend:
     docker:
-      # Docker image here that supports Ansible
-    steps:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
