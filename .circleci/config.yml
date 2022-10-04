@@ -213,11 +213,10 @@ jobs:
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
               echo "Database has been migrated successfully!"
-              # If you are using memstash.io, generate the token "7933fe63-4687-4fa1-8426-aa25aa1730ec" on the website
-              curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" --request PUT --data "SUCCESS" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+              curl https://kvdb.io/HUBE4dS47dQ7pgBG17Pzjg/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             else
               echo "Database migration didn't succeed"
-              curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" --request PUT --data "FAILED" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}          
+              curl https://kvdb.io/HUBE4dS47dQ7pgBG17Pzjg/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '0'         
             fi
      # Here's where you will add some code to rollback on failure      
 
