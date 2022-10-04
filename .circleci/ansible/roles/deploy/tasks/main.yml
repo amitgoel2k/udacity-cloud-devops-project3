@@ -1,16 +1,12 @@
 ---
-- name: Upgrade npm
-  become: true
-  shell: |
-    npm install
 - name: Copy compiled files
   unarchive:
-    src: /root/project/backend.tar.gz
+    src: /root/project/artifact.tar.gz
     dest: /home/ubuntu/
 - name: Build backend
   ignore_errors: yes
   shell: |
-    cd /home/ubuntu/backend
+    cd /home/ubuntu/artifact
     npm i
     npm run build
 - name: Stop and delete already running server
@@ -21,6 +17,6 @@
 - name: Start server
   become: true
   shell: |
-    cd /home/ubuntu/backend
+    cd /home/ubuntu/artifact
     pm2 start npm --name backend -- start
     pm2 ls
