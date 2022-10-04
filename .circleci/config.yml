@@ -257,8 +257,7 @@ jobs:
           root: .
           paths:
             - ./frontend/dist
-      - destroy-environment:
-          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}      
+     
                     
   deploy-backend:
     docker:
@@ -293,8 +292,7 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
-      - destroy-environment:
-          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}    
+ 
 
 
 workflows:
