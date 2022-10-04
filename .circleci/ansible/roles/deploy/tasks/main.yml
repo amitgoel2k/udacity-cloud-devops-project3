@@ -7,7 +7,7 @@
   ignore_errors: yes
   shell: |
     cd /home/ubuntu/artifact
-    npm i
+    npm install
     npm run build
 - name: Stop and delete already running server
   ignore_errors: yes
