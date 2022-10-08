@@ -263,8 +263,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: 
-            - "d4:a2:ff:58:ca:55:02:0f:b9:67:cf:56:cc:02:cb:31"
+          fingerprints: ["d4:a2:ff:58:ca:55:02:0f:b9:67:cf:56:cc:02:cb:31"]
       - attach_workspace:
           at: .
       - restore_cache:
