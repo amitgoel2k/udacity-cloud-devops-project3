@@ -34,7 +34,7 @@ commands:
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             SUCCESS=$(curl -H curl https://kvdb.io/HUBE4dS47dQ7pgBG17Pzjg/migration_${CIRCLE_WORKFLOW_ID:0:7} >>)
             echo $SUCCESS
-            if(( "$SUCCESS"=="success" )); 
+            if(( "$SUCCESS"=="SUCCESS" )); 
             then
               cd ./backend
               npm install
@@ -196,7 +196,9 @@ jobs:
           root: .
           paths:
             - .circleci/ansible/inventory.txt
-      # Here's where you will add some code to rollback on failure      
+      - destroy_environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
 
   configure-infrastructure:
     docker:
@@ -219,7 +221,9 @@ jobs:
             cat inventory.txt
             export  ANSIBLE_HOST_KEY_CHECKING=false
             ansible-playbook -i inventory.txt configure-server.yml
-      # Here's where you will add some code to rollback on failure      
+      - destroy_environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
 
   run-migrations:
     docker:
@@ -235,20 +239,23 @@ jobs:
           command: |
             cd backend
             npm install
+            npm run migrations:revert
             npm run migrations |tee migrations_dump.txt
-            cat migrations_dump.txt
+            cat migrations_dump.txt     
       - run:
           name: Send migration results to kvdb
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
               echo "Database has been migrated successfully!"
-              curl -k https://kvdb.io/HUBE4dS47dQ7pgBG17Pzjg/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+              curl -k https://kvdb.io/HUBE4dS47dQ7pgBG17Pzjg/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'SUCCESS'
             else
               echo "Database migration didn't succeed"
-              curl -k https://kvdb.io/HUBE4dS47dQ7pgBG17Pzjg/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '0'         
+              curl -k https://kvdb.io/HUBE4dS47dQ7pgBG17Pzjg/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'FAILED'         
             fi
-     # Here's where you will add some code to rollback on failure      
+      - destroy_environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail 
 
   deploy-frontend:
     docker:
@@ -285,7 +292,12 @@ jobs:
           root: .
           paths:
             - ./frontend/dist
-     
+      - destroy_environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
+      - revert_migrations:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail     
                     
   deploy-backend:
     docker:
@@ -323,6 +335,13 @@ jobs:
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=false
             ansible-playbook -i inventory.txt deploy-backend.yml -vv
+      - destroy_environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
+      - revert_migrations:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail  
+  
   smoke-test:
     docker:
       - image: alpine:latest 
@@ -345,7 +364,7 @@ jobs:
             echo ${URL}
             if curl -s ${URL} | grep "Welcome"
             then
-              return 0
+              return 1
             else
               return 1
             fi  
@@ -364,9 +383,12 @@ jobs:
             else
               return 1
             fi    
-
-           # Here's where you will add some code to rollback on failure  
- 
+      - destroy_environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
+      - revert_migrations:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
 
 
 workflows:
