@@ -3,24 +3,31 @@ version: 2.1
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+      workflowID:
+        type: string  
     steps:
+      - run:
+          name: Echo workflow ID that is going be be destroyed
+          when: on_fail
+          command: echo "WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Destroy backend stack
           when: on_fail
           command: |
-            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-            aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
-            aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws s3 rm s3://udapeople-<< parameters.workflowID >> --recursive
+            aws s3 rb s3://udapeople-<< parameters.workflowID >> --force
+            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.workflowID >>
       - run:
           name: Destroy frontend stack
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.workflowID >>
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
-      id:
+      workflowID:
         type: string      
     steps:
       - run:
@@ -193,7 +200,7 @@ jobs:
           paths:
             - .circleci/ansible/inventory.txt
       - destroy-environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
 
   configure-infrastructure:
@@ -218,7 +225,7 @@ jobs:
             export  ANSIBLE_HOST_KEY_CHECKING=false
             ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
 
   run-migrations:
@@ -250,7 +257,7 @@ jobs:
               curl -k https://kvdb.io/HUBE4dS47dQ7pgBG17Pzjg/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'FAILED'         
             fi
       - destroy-environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail 
 
   deploy-frontend:
@@ -289,10 +296,10 @@ jobs:
           paths:
             - ./frontend/dist
       - destroy-environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
       - revert-migrations:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail     
                     
   deploy-backend:
@@ -332,10 +339,10 @@ jobs:
             export ANSIBLE_HOST_KEY_CHECKING=false
             ansible-playbook -i inventory.txt deploy-backend.yml -vv
       - destroy-environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
       - revert-migrations:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail  
   
   smoke-test:
@@ -380,10 +387,10 @@ jobs:
               return 1
             fi    
       - destroy-environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
       - revert-migrations:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
 
 
