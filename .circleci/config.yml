@@ -201,7 +201,6 @@ jobs:
             - .circleci/ansible/inventory.txt
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail
 
   configure-infrastructure:
     docker:
@@ -226,7 +225,6 @@ jobs:
             ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail
 
   run-migrations:
     docker:
@@ -258,7 +256,6 @@ jobs:
             fi
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail 
 
   deploy-frontend:
     docker:
@@ -297,10 +294,9 @@ jobs:
             - ./frontend/dist
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail
       - revert-migrations:
           WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail     
+   
                     
   deploy-backend:
     docker:
@@ -340,10 +336,8 @@ jobs:
             ansible-playbook -i inventory.txt deploy-backend.yml -vv
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail
       - revert-migrations:
-          WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail  
+          WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7} 
   
   smoke-test:
     docker:
@@ -388,10 +382,8 @@ jobs:
             fi    
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail
       - revert-migrations:
           WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail
 
 
 workflows:
