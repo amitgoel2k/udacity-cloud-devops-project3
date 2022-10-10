@@ -401,7 +401,9 @@ jobs:
               list-exports --query "Exports[?Name=='WorkflowID1'].Value" \
               --no-paginate --output text)
             # Print the Old Workflow ID
-            echo OldWorkflowID: "${OldWorkflowID}" 
+            echo OldWorkflowID: "${OldWorkflowID}"
+            # Save it in KVDB
+            curl -k https://kvdb.io/HUBE4dS47dQ7pgBG17Pzjg/Old_WorkflowID  -d '${OldWorkflowID}' 
       - run:
           name: Update cloudfront distribution
           command: |
@@ -423,6 +425,7 @@ jobs:
       - run:
           name: Get old workflow id and remove stack, files
           command: |
+            OldWorkflowID=$(curl --insecure  https://kvdb.io/HUBE4dS47dQ7pgBG17Pzjg/Old_WorkflowID)
             echo OldWorkflowID: "${OldWorkflowID}" 
             echo CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
             # Fetch the stack names          
