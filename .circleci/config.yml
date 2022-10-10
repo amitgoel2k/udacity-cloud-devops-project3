@@ -398,7 +398,7 @@ jobs:
           name: Store Old WorkflowID for cleanup phase
           command: |
             OldWorkflowID=$(aws cloudformation \
-              list-exports --query "Exports[?Name=='WorkflowID'].Value" \
+              list-exports --query "Exports[?Name=='WorkflowID1'].Value" \
               --no-paginate --output text)
             # Print the Old Workflow ID
             echo OldWorkflowID: "${OldWorkflowID}" 
@@ -408,7 +408,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name InitialStack \
-              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides WorkflowID1="${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
