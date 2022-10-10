@@ -417,7 +417,7 @@ jobs:
           command: |
             # Fetch the Old workflow ID
             export OldWorkflowID=$(aws cloudformation \
-              list-exports --query "Exports[?Name==\`WorkflowID1\`].Value" \
+              list-exports --query "Exports[?Name=='WorkflowID1'].Value" \
               --no-paginate --output text)
             echo OldWorkflowID: "${OldWorkflowID}"
             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
