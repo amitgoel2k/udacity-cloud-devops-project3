@@ -415,7 +415,7 @@ jobs:
       - destroy-environment:
           WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations:
-          WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7} 
+          WorkflowID: ${CIRCLE_WORKFLOW_ID:0:7}
 
   cleanup:
     docker:
@@ -458,10 +458,10 @@ workflows:
           requires: [build-backend]
       - deploy-infrastructure:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only:
-                - master
+#          filters:
+#            branches:
+#              only:
+#                - master
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:
@@ -475,4 +475,4 @@ workflows:
       - cloudfront-update:
           requires: [smoke-test]
       - cleanup:
-          requires: [cloudfront-update] 
+          requires: [cloudfront-update]
