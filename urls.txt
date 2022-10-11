@@ -1,4 +1,10 @@
 GitHub URL [URL 01] - https://github.com/amitgoel2k/udacity-cloud-devops-project3
 
-S3 Bucket URL [URL 02] - http://udapeople-d092af0.s3-website.us-east-2.amazonaws.com/#/employees <<< This will change after each run
+S3 Bucket URL [URL 02] - http://udapeople-8ba918e.s3-website.us-east-2.amazonaws.com/#/employees
+
+CloudFront. [URL03] – http://d3vppspxhtxwm5.cloudfront.net/#/employees
+
+Backend URL [URL04] - http://ec2-18-222-171-101.us-east-2.compute.amazonaws.com:3030/api/status
+
+Prometheus URL [URL05] - http://ec2-18-223-161-162.us-east-2.compute.amazonaws.com:9090/targets
 
