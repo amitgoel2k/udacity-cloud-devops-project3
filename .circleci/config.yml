@@ -403,7 +403,7 @@ jobs:
             # Print the Old Workflow ID
             echo OldWorkflowID: "${OldWorkflowID}"
             # Save it in KVDB
-            curl -k https://kvdb.io/HUBE4dS47dQ7pgBG17Pzjg/Old_WorkflowID  -d '${OldWorkflowID}' 
+            curl -k https://kvdb.io/HUBE4dS47dQ7pgBG17Pzjg/Old_WorkflowID  -d ${OldWorkflowID}
       - run:
           name: Update cloudfront distribution
           command: |
