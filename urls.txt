@@ -1,0 +1,4 @@
+GitHub URL [URL 01] - https://github.com/amitgoel2k/udacity-cloud-devops-project3
+
+S3 Bucket URL [URL 02] - http://udapeople-d092af0.s3-website.us-east-2.amazonaws.com/#/employees <<< This will change after each run
+
