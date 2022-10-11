@@ -1,0 +1,24 @@
+---
+- name: "Display remote environment"
+  shell: env
+
+- name: Copy compiled files
+  become: yes
+  synchronize:
+    src: ../../backend
+    dest: /home/ubuntu
+    recursive: true
+
+- name: Stop and delete already running server
+  ignore_errors: yes
+  shell: |
+    cd /home/ubuntu/backend/dist
+    pm2 stop backend
+    pm2 delete backend
+
+- name: Start server
+  become: true
+  shell: |
+    cd /home/ubuntu/backend/dist
+    pm2 start npm --name backend -- start
+    pm2 ls
